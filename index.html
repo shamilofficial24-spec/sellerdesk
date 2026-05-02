@@ -1,354 +1,1070 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SellerDesk P&L</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SellerDesk V2</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+<style>
+:root {
+  --bg: #0d0e10;
+  --bg-soft: #151618;
+  --panel: #18191c;
+  --card: #202126;
+  --input: #111215;
+  --border: rgba(198, 169, 105, 0.16);
+  --text: #f7f2e8;
+  --muted: #b9b1a3;
+  --gold: #c6a969;
+  --gold-light: #e8d9b5;
+  --gold-soft: #211d16;
+  --green: #35c878;
+  --red: #ef6f6c;
+  --red-soft: #2a1515;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+}
 
-    body {
-      margin: 0;
-      background: #0f1115;
-      color: #fff;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .app {
-      max-width: 1100px;
-      margin: auto;
-      padding: 18px;
-    }
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(198, 169, 105, 0.12), transparent 32%),
+    radial-gradient(circle at top right, rgba(232, 217, 181, 0.06), transparent 30%),
+    linear-gradient(180deg, #0d0e10 0%, #141518 55%, #0d0e10 100%);
+  padding-bottom: 92px;
+}
 
-    .header {
-      background: linear-gradient(135deg, #191919, #2a2115);
-      border: 1px solid #3c2f1d;
-      border-radius: 22px;
-      padding: 24px;
-      margin-bottom: 20px;
-    }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(13, 14, 16, 0.86);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+}
 
-    .header h1 {
-      margin: 0;
-      color: #f5d7a1;
-      font-size: 30px;
-    }
+.topbar {
+  max-width: 900px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
 
-    .header p {
-      color: #bdbdbd;
-      margin-top: 8px;
-    }
+header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 850;
+  color: var(--gold-light);
+}
 
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 14px;
-      margin-bottom: 24px;
-    }
+#userSelect {
+  width: auto;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: #111215;
+  color: var(--gold-light);
+  border: 1px solid var(--border);
+  font-weight: 800;
+}
 
-    .summary-card {
-      background: #1b1d22;
-      border: 1px solid #333;
-      border-radius: 18px;
-      padding: 18px;
-    }
+main {
+  max-width: 900px;
+  margin: auto;
+  padding: 14px;
+}
 
-    .summary-card span {
-      color: #aaa;
-      font-size: 13px;
-    }
+.page {
+  display: none;
+}
 
-    .summary-card h2 {
-      margin: 8px 0 0;
-      font-size: 24px;
-      color: #2ee68a;
-    }
+.page.active {
+  display: block;
+}
 
-    .section-title {
-      color: #f5d7a1;
-      margin: 25px 0 14px;
-      font-size: 24px;
-    }
+.card,
+.order-card,
+.stat {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018)),
+    var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
 
-    .category-grid {
-      display: grid;
-      gap: 16px;
-    }
+.card {
+  padding: 18px;
+  margin-bottom: 14px;
+}
 
-    .card {
-      background: #1b1d22;
-      border: 1px solid #383020;
-      border-radius: 22px;
-      padding: 20px;
-    }
+.card h2,
+section h2 {
+  margin-top: 0;
+  color: var(--gold-light);
+}
 
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
 
-    .card h3 {
-      margin: 0;
-      font-size: 22px;
-      color: #ffe7b5;
-    }
+.stat {
+  padding: 16px;
+}
 
-    .profit {
-      font-size: 22px;
-      font-weight: bold;
-      color: #2ee68a;
-    }
+.stat small {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-weight: 700;
+}
 
-    .loss {
-      color: #ff5c5c;
-    }
+.stat strong {
+  font-size: 24px;
+  color: var(--gold-light);
+}
 
-    .items {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
-    }
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 15px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--input);
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+}
 
-    .item {
-      background: #121317;
-      border: 1px solid #332818;
-      border-radius: 14px;
-      padding: 13px;
-    }
+input::placeholder,
+textarea::placeholder {
+  color: rgba(185, 177, 163, 0.65);
+}
 
-    .item label {
-      display: block;
-      font-size: 12px;
-      color: #aaa;
-      margin-bottom: 6px;
-    }
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(198,169,105,0.11);
+}
 
-    .item input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      font-size: 18px;
-      font-weight: bold;
-    }
+textarea {
+  min-height: 92px;
+  resize: vertical;
+}
 
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 22px;
-      flex-wrap: wrap;
-    }
+.form {
+  display: grid;
+  gap: 12px;
+}
 
-    button {
-      border: none;
-      border-radius: 14px;
-      padding: 12px 18px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
-    .save {
-      background: #d8a84f;
-      color: #111;
-    }
+.pay-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
-    .reset {
-      background: #292929;
-      color: #fff;
-      border: 1px solid #444;
-    }
+.pay-toggle label {
+  background: var(--gold-soft);
+  border: 1px solid rgba(198,169,105,0.18);
+  border-radius: 18px;
+  padding: 15px;
+  text-align: center;
+  font-weight: 850;
+  color: var(--gold-light);
+}
 
-    @media (max-width: 600px) {
-      .header h1 {
-        font-size: 24px;
-      }
+button {
+  border: 0;
+  border-radius: 18px;
+  min-height: 52px;
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+}
 
-      .card-top {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 8px;
-      }
-    }
-  </style>
+.btn-green {
+  background: linear-gradient(135deg, #3fd886, #24b567);
+  color: #04140b;
+}
+
+.btn-blue {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #1d1606;
+}
+
+.btn-red {
+  background: var(--red-soft);
+  color: #ffb7b5;
+  border: 1px solid rgba(239,111,108,0.22);
+}
+
+.btn-dark {
+  background: #24252a;
+  color: var(--gold-light);
+  border: 1px solid var(--border);
+}
+
+details {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 15px;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+details .advanced {
+  display: grid;
+  gap: 12px;
+  margin-top: 13px;
+}
+
+.order-card {
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.order-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.order-top h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--gold-light);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--gold-soft);
+  border: 1px solid rgba(198,169,105,0.14);
+  color: var(--gold-light);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.profit {
+  color: var(--green);
+  font-weight: 900;
+}
+
+.loss {
+  color: var(--red);
+  font-weight: 900;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.toolbar {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  height: 74px;
+  border-radius: 24px;
+  background: rgba(24,25,28,0.94);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--border);
+  box-shadow: 0 22px 55px rgba(0,0,0,0.58);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 100;
+}
+
+.bottom-nav button {
+  background: transparent;
+  border-radius: 18px;
+  color: var(--muted);
+  min-height: 70px;
+  font-size: 12px;
+}
+
+.bottom-nav button.active {
+  background: var(--gold-soft);
+  color: var(--gold-light);
+}
+
+@media (min-width: 800px) {
+  body {
+    padding-bottom: 0;
+  }
+
+  .bottom-nav {
+    position: sticky;
+    top: 56px;
+    max-width: 900px;
+    margin: 10px auto;
+    height: 64px;
+  }
+
+  .bottom-nav button {
+    min-height: 60px;
+    font-size: 14px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form textarea,
+  .form details,
+  .form button.full,
+  .full {
+    grid-column: 1 / -1;
+  }
+}
+</style>
 </head>
 
 <body>
-  <div class="app">
 
-    <div class="header">
-      <h1>SellerDesk P&L</h1>
-      <p>Track sales, cost, ads, shipping, returns and profit by business channel.</p>
-    </div>
+<header>
+  <div class="topbar">
+    <h1>📦 SellerDesk V2</h1>
 
-    <div class="summary">
-      <div class="summary-card">
-        <span>Total Sales</span>
-        <h2 id="totalSales">₹0</h2>
-      </div>
+    <select id="userSelect" onchange="switchUser()">
+      <option value="sha">👤 Sha</option>
+      <option value="friend">👤 Friend</option>
+    </select>
+  </div>
+</header>
 
-      <div class="summary-card">
-        <span>Total Cost</span>
-        <h2 id="totalCost">₹0</h2>
-      </div>
+<nav class="bottom-nav">
+  <button class="nav active" data-page="home">🏠<br>Home</button>
+  <button class="nav" data-page="add">➕<br>Add</button>
+  <button class="nav" data-page="orders">📦<br>Orders</button>
+  <button class="nav" data-page="expenses">💰<br>Expense</button>
+  <button class="nav" data-page="backup">⚙️<br>More</button>
+</nav>
 
-      <div class="summary-card">
-        <span>Total Expense</span>
-        <h2 id="totalExpense">₹0</h2>
-      </div>
+<main>
 
-      <div class="summary-card">
-        <span>Net Profit</span>
-        <h2 id="netProfit">₹0</h2>
-      </div>
-    </div>
-
-    <h2 class="section-title">Category P&L</h2>
-
-    <div class="category-grid" id="categoryGrid"></div>
-
-    <div class="buttons">
-      <button class="save" onclick="saveData()">Save Data</button>
-      <button class="reset" onclick="resetData()">Reset All</button>
-    </div>
-
+<section id="home" class="page active">
+  <div class="toolbar">
+    <select id="periodFilter" onchange="renderAll()">
+      <option value="today">Today</option>
+      <option value="month">This Month</option>
+      <option value="quarter">This Quarter</option>
+      <option value="year">This Year</option>
+      <option value="all">All Time</option>
+    </select>
   </div>
 
-  <script>
-    const categories = [
-      {
-        name: "Amazon",
-        fields: ["Sales", "Product Cost", "Amazon Fees", "Ads", "Shipping", "Returns"]
-      },
-      {
-        name: "Ukashi Website",
-        fields: ["Sales", "Product Cost", "Meta Ads", "Shipping", "Payment Fee", "Returns"]
-      },
-      {
-        name: "WhatsApp / Direct",
-        fields: ["Sales", "Product Cost", "Delivery", "Packaging", "Returns"]
-      },
-      {
-        name: "India Dropshipping",
-        fields: ["Sales", "Product Cost", "Ads", "Shipping", "COD Charges", "Returns"]
-      },
-      {
-        name: "US Dropshipping",
-        fields: ["Sales", "Product Cost", "Ad Spend", "Platform Fee", "Refunds"]
-      }
-    ];
+  <div class="stat-grid">
+    <div class="stat"><small>Revenue</small><strong id="revenue">₹0</strong></div>
+    <div class="stat"><small>Order Cost</small><strong id="cost">₹0</strong></div>
+    <div class="stat"><small>Expenses</small><strong id="expenseTotal">₹0</strong></div>
+    <div class="stat"><small>Net Profit</small><strong id="profit">₹0</strong></div>
+    <div class="stat"><small>Orders</small><strong id="orderCount">0</strong></div>
+    <div class="stat"><small>Pending</small><strong id="pendingCount">0</strong></div>
+    <div class="stat"><small>Shipped</small><strong id="shippedCount">0</strong></div>
+    <div class="stat"><small>COD</small><strong id="codCount">0</strong></div>
+  </div>
 
-    let data = JSON.parse(localStorage.getItem("sellerdeskData")) || {};
+  <div class="card">
+    <h2>Category P&L</h2>
+    <div id="categorySummary"></div>
+  </div>
+</section>
 
-    function formatMoney(value) {
-      return "₹" + Number(value || 0).toLocaleString("en-IN");
-    }
+<section id="add" class="page">
+  <div class="card">
+    <h2 id="orderFormTitle">Add Order</h2>
 
-    function renderCards() {
-      const grid = document.getElementById("categoryGrid");
-      grid.innerHTML = "";
+    <form id="orderForm" class="form">
+      <input type="date" name="date" id="orderDate" required />
 
-      categories.forEach((cat, catIndex) => {
-        if (!data[cat.name]) data[cat.name] = {};
+      <select name="category" required>
+        <option>WhatsApp / Meta</option>
+        <option>Amazon</option>
+        <option>India Dropshipping</option>
+        <option>US Dropshipping</option>
+      </select>
 
-        const card = document.createElement("div");
-        card.className = "card";
+      <input name="name" placeholder="Customer Name" required />
+      <input name="phone" placeholder="Phone / Email" />
+      <textarea name="address" placeholder="Full Address"></textarea>
 
-        let inputs = "";
+      <input name="product" placeholder="Product Name" required />
 
-        cat.fields.forEach(field => {
-          const value = data[cat.name][field] || "";
-          inputs += `
-            <div class="item">
-              <label>${field}</label>
-              <input 
-                type="number" 
-                value="${value}" 
-                oninput="updateValue('${cat.name}', '${field}', this.value)"
-                placeholder="0"
-              />
-            </div>
-          `;
-        });
+      <div class="row-2">
+        <input type="number" name="qty" placeholder="Qty" value="1" required />
+        <input type="number" name="selling" placeholder="Selling Price" required />
+      </div>
 
-        card.innerHTML = `
-          <div class="card-top">
-            <h3>${cat.name}</h3>
-            <div class="profit" id="profit-${catIndex}">₹0</div>
+      <input type="number" name="cost" placeholder="Product / Supplier Cost" />
+
+      <div class="pay-toggle full">
+        <label><input type="radio" name="payment" value="Prepaid" checked /> Prepaid</label>
+        <label><input type="radio" name="payment" value="COD" /> COD</label>
+      </div>
+
+      <select name="status">
+        <option>Pending</option>
+        <option>Packed</option>
+        <option>Shipped</option>
+        <option>Delivered</option>
+        <option>Returned</option>
+        <option>Cancelled</option>
+      </select>
+
+      <details id="advancedCosts">
+        <summary>+ Advanced Costs</summary>
+        <div class="advanced">
+          <input type="number" name="shipping" placeholder="Shipping Cost" />
+          <input type="number" name="ads" placeholder="Ads Cost" />
+          <input type="number" name="platform" placeholder="Platform Fee" />
+          <input type="number" name="codCharge" placeholder="COD Charge" />
+          <input type="number" name="refund" placeholder="Refund / Return Loss" />
+          <input type="number" name="exchange" placeholder="Exchange Rate for US" value="1" />
+          <input name="tracking" placeholder="Shiprocket AWB / Tracking ID" />
+          <textarea name="notes" placeholder="Notes"></textarea>
+        </div>
+      </details>
+
+      <button id="orderSubmitBtn" class="btn-green full" type="submit">Save Order</button>
+      <button id="cancelEditBtn" class="btn-dark full" type="button" onclick="cancelEdit()" style="display:none;">Cancel Edit</button>
+    </form>
+  </div>
+</section>
+
+<section id="orders" class="page">
+  <div class="toolbar">
+    <input id="searchInput" placeholder="Search orders..." oninput="renderOrders()" />
+
+    <select id="categoryFilter" onchange="renderOrders()">
+      <option value="all">All Categories</option>
+      <option>WhatsApp / Meta</option>
+      <option>Amazon</option>
+      <option>India Dropshipping</option>
+      <option>US Dropshipping</option>
+    </select>
+
+    <select id="statusFilter" onchange="renderOrders()">
+      <option value="all">All Status</option>
+      <option>Pending</option>
+      <option>Packed</option>
+      <option>Shipped</option>
+      <option>Delivered</option>
+      <option>Returned</option>
+      <option>Cancelled</option>
+    </select>
+  </div>
+
+  <div id="ordersList"></div>
+</section>
+
+<section id="expenses" class="page">
+  <div class="card">
+    <h2>Add Expense</h2>
+
+    <form id="expenseForm" class="form">
+      <input type="date" name="date" id="expenseDate" required />
+
+      <select name="category">
+        <option>General</option>
+        <option>WhatsApp / Meta</option>
+        <option>Amazon</option>
+        <option>India Dropshipping</option>
+        <option>US Dropshipping</option>
+      </select>
+
+      <select name="type">
+        <option>Meta Ads</option>
+        <option>Amazon Fees</option>
+        <option>Product Purchase</option>
+        <option>Supplier Payment</option>
+        <option>Shipping Charges</option>
+        <option>Shiprocket Recharge</option>
+        <option>COD Charges</option>
+        <option>Returns / Refunds</option>
+        <option>Packaging</option>
+        <option>Staff Salary</option>
+        <option>Software Tools</option>
+        <option>Other</option>
+      </select>
+
+      <input type="number" name="amount" placeholder="Amount" required />
+      <textarea name="notes" placeholder="Notes"></textarea>
+
+      <button class="btn-green full" type="submit">Save Expense</button>
+    </form>
+  </div>
+
+  <h2>Expenses</h2>
+  <div id="expensesList"></div>
+</section>
+
+<section id="backup" class="page">
+  <div class="card">
+    <h2>Backup / Export</h2>
+    <div class="form">
+      <button class="btn-blue" onclick="exportOrdersCSV()">Export Orders CSV</button>
+      <button class="btn-blue" onclick="downloadBackup()">Download Backup JSON</button>
+      <input type="file" id="backupFile" accept=".json" />
+      <button class="btn-dark" onclick="importBackup()">Import Backup</button>
+      <button class="btn-red" onclick="clearData()">Delete This User Data</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Storage</h2>
+    <p class="muted">Sha and Friend data are stored separately in this browser.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+let currentUser = localStorage.getItem("sellerdesk_current_user") || "sha";
+let editingOrderId = null;
+
+document.getElementById("userSelect").value = currentUser;
+
+function orderKey() {
+  return `sellerdesk_${currentUser}_orders`;
+}
+
+function expenseKey() {
+  return `sellerdesk_${currentUser}_expenses`;
+}
+
+let orders = JSON.parse(localStorage.getItem(orderKey()) || "[]");
+let expenses = JSON.parse(localStorage.getItem(expenseKey()) || "[]");
+
+const categories = [
+  "WhatsApp / Meta",
+  "Amazon",
+  "India Dropshipping",
+  "US Dropshipping"
+];
+
+const today = () => new Date().toISOString().slice(0, 10);
+
+document.getElementById("orderDate").value = today();
+document.getElementById("expenseDate").value = today();
+
+function switchUser() {
+  currentUser = document.getElementById("userSelect").value;
+  localStorage.setItem("sellerdesk_current_user", currentUser);
+
+  orders = JSON.parse(localStorage.getItem(orderKey()) || "[]");
+  expenses = JSON.parse(localStorage.getItem(expenseKey()) || "[]");
+
+  cancelEdit(false);
+  renderAll();
+}
+
+function saveData() {
+  localStorage.setItem(orderKey(), JSON.stringify(orders));
+  localStorage.setItem(expenseKey(), JSON.stringify(expenses));
+}
+
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2
+  });
+}
+
+function id() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function getNumber(value) {
+  return Number(value || 0);
+}
+
+function revenue(order) {
+  const total = getNumber(order.selling) * getNumber(order.qty);
+  return order.category === "US Dropshipping"
+    ? total * getNumber(order.exchange || 1)
+    : total;
+}
+
+function cost(order) {
+  const total =
+    getNumber(order.cost) +
+    getNumber(order.shipping) +
+    getNumber(order.ads) +
+    getNumber(order.platform) +
+    getNumber(order.codCharge) +
+    getNumber(order.refund);
+
+  return order.category === "US Dropshipping"
+    ? total * getNumber(order.exchange || 1)
+    : total;
+}
+
+function profit(order) {
+  return revenue(order) - cost(order);
+}
+
+function isInPeriod(dateString) {
+  const mode = document.getElementById("periodFilter").value;
+  if (mode === "all") return true;
+
+  const d = new Date(dateString);
+  const now = new Date();
+
+  if (mode === "today") return dateString === today();
+
+  if (mode === "month") {
+    return d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear();
+  }
+
+  if (mode === "quarter") {
+    return Math.floor(d.getMonth() / 3) === Math.floor(now.getMonth() / 3) &&
+      d.getFullYear() === now.getFullYear();
+  }
+
+  if (mode === "year") return d.getFullYear() === now.getFullYear();
+
+  return true;
+}
+
+document.querySelectorAll(".nav").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".nav, .page").forEach(el => el.classList.remove("active"));
+    button.classList.add("active");
+    document.getElementById(button.dataset.page).classList.add("active");
+    renderAll();
+  });
+});
+
+document.getElementById("orderForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const data = Object.fromEntries(new FormData(event.target).entries());
+
+  const orderData = {
+    date: data.date,
+    category: data.category,
+    name: data.name.trim(),
+    phone: data.phone.trim(),
+    address: data.address.trim(),
+    product: data.product.trim(),
+    qty: getNumber(data.qty || 1),
+    selling: getNumber(data.selling),
+    cost: getNumber(data.cost),
+    payment: data.payment,
+    status: data.status,
+    shipping: getNumber(data.shipping),
+    ads: getNumber(data.ads),
+    platform: getNumber(data.platform),
+    codCharge: getNumber(data.codCharge),
+    refund: getNumber(data.refund),
+    exchange: getNumber(data.exchange || 1),
+    tracking: data.tracking || "",
+    notes: data.notes || ""
+  };
+
+  if (editingOrderId) {
+    orders = orders.map(order =>
+      order.id === editingOrderId
+        ? { ...order, ...orderData, updatedAt: new Date().toISOString() }
+        : order
+    );
+
+    saveData();
+    alert("Order updated ✔️");
+    cancelEdit(false);
+  } else {
+    orders.unshift({
+      id: id(),
+      createdAt: new Date().toISOString(),
+      ...orderData
+    });
+
+    saveData();
+    alert("Order saved ✔️");
+    resetOrderForm();
+  }
+
+  renderAll();
+});
+
+document.getElementById("expenseForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const data = Object.fromEntries(new FormData(event.target).entries());
+
+  expenses.unshift({
+    id: id(),
+    createdAt: new Date().toISOString(),
+    date: data.date,
+    category: data.category,
+    type: data.type,
+    amount: getNumber(data.amount),
+    notes: data.notes || ""
+  });
+
+  saveData();
+
+  event.target.reset();
+  document.getElementById("expenseDate").value = today();
+
+  alert("Expense saved ✔️");
+  renderAll();
+});
+
+function resetOrderForm() {
+  const form = document.getElementById("orderForm");
+  form.reset();
+  document.getElementById("orderDate").value = today();
+  form.querySelector("[name='qty']").value = 1;
+  form.querySelector("[name='exchange']").value = 1;
+  form.querySelector("[name='payment'][value='Prepaid']").checked = true;
+
+  document.getElementById("orderFormTitle").textContent = "Add Order";
+  document.getElementById("orderSubmitBtn").textContent = "Save Order";
+  document.getElementById("cancelEditBtn").style.display = "none";
+  document.getElementById("advancedCosts").open = false;
+}
+
+function cancelEdit(showAlert = true) {
+  editingOrderId = null;
+  resetOrderForm();
+  if (showAlert) alert("Edit cancelled");
+}
+
+function editOrder(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  editingOrderId = orderId;
+
+  const form = document.getElementById("orderForm");
+
+  form.date.value = order.date || today();
+  form.category.value = order.category || "WhatsApp / Meta";
+  form.name.value = order.name || "";
+  form.phone.value = order.phone || "";
+  form.address.value = order.address || "";
+  form.product.value = order.product || "";
+  form.qty.value = order.qty || 1;
+  form.selling.value = order.selling || "";
+  form.cost.value = order.cost || "";
+  form.status.value = order.status || "Pending";
+  form.shipping.value = order.shipping || "";
+  form.ads.value = order.ads || "";
+  form.platform.value = order.platform || "";
+  form.codCharge.value = order.codCharge || "";
+  form.refund.value = order.refund || "";
+  form.exchange.value = order.exchange || 1;
+  form.tracking.value = order.tracking || "";
+  form.notes.value = order.notes || "";
+
+  const paymentValue = order.payment || "Prepaid";
+  const paymentInput = form.querySelector(`[name="payment"][value="${paymentValue}"]`);
+  if (paymentInput) paymentInput.checked = true;
+
+  document.getElementById("orderFormTitle").textContent = "Edit Order";
+  document.getElementById("orderSubmitBtn").textContent = "Update Order";
+  document.getElementById("cancelEditBtn").style.display = "block";
+  document.getElementById("advancedCosts").open = true;
+
+  document.querySelectorAll(".nav, .page").forEach(el => el.classList.remove("active"));
+  document.querySelector('[data-page="add"]').classList.add("active");
+  document.getElementById("add").classList.add("active");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderHome() {
+  const filteredOrders = orders.filter(o => isInPeriod(o.date));
+  const filteredExpenses = expenses.filter(e => isInPeriod(e.date));
+
+  const totalRevenue = filteredOrders.reduce((sum, o) => sum + revenue(o), 0);
+  const totalCost = filteredOrders.reduce((sum, o) => sum + cost(o), 0);
+  const totalExpenses = filteredExpenses.reduce((sum, e) => sum + getNumber(e.amount), 0);
+  const netProfit = totalRevenue - totalCost - totalExpenses;
+
+  document.getElementById("revenue").textContent = money(totalRevenue);
+  document.getElementById("cost").textContent = money(totalCost);
+  document.getElementById("expenseTotal").textContent = money(totalExpenses);
+  document.getElementById("profit").textContent = money(netProfit);
+  document.getElementById("profit").className = netProfit >= 0 ? "profit" : "loss";
+
+  document.getElementById("orderCount").textContent = filteredOrders.length;
+  document.getElementById("pendingCount").textContent =
+    filteredOrders.filter(o => !["Shipped", "Delivered"].includes(o.status)).length;
+  document.getElementById("shippedCount").textContent =
+    filteredOrders.filter(o => ["Shipped", "Delivered"].includes(o.status)).length;
+  document.getElementById("codCount").textContent =
+    filteredOrders.filter(o => o.payment === "COD").length;
+
+  document.getElementById("categorySummary").innerHTML = categories.map(category => {
+    const categoryOrders = filteredOrders.filter(o => o.category === category);
+    const categoryExpenses = filteredExpenses.filter(e => e.category === category);
+
+    const r = categoryOrders.reduce((sum, o) => sum + revenue(o), 0);
+    const c = categoryOrders.reduce((sum, o) => sum + cost(o), 0);
+    const x = categoryExpenses.reduce((sum, e) => sum + getNumber(e.amount), 0);
+    const p = r - c - x;
+
+    return `
+      <div class="order-card">
+        <div class="order-top">
+          <h3>${category}</h3>
+          <strong class="${p >= 0 ? "profit" : "loss"}">${money(p)}</strong>
+        </div>
+        <div class="badges">
+          <span class="badge">Revenue ${money(r)}</span>
+          <span class="badge">Cost ${money(c)}</span>
+          <span class="badge">Expense ${money(x)}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderOrders() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const cat = document.getElementById("categoryFilter").value;
+  const status = document.getElementById("statusFilter").value;
+
+  const result = orders.filter(order => {
+    const matchesSearch = JSON.stringify(order).toLowerCase().includes(search);
+    const matchesCategory = cat === "all" || order.category === cat;
+    const matchesStatus = status === "all" || order.status === status;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  document.getElementById("ordersList").innerHTML = result.length
+    ? result.map(orderTemplate).join("")
+    : `<div class="card muted">No orders found.</div>`;
+}
+
+function orderTemplate(order) {
+  const p = profit(order);
+
+  return `
+    <div class="order-card">
+      <div class="order-top">
+        <div>
+          <h3>${escapeHtml(order.name)}</h3>
+          <div class="muted">${escapeHtml(order.phone || "")}</div>
+        </div>
+        <strong class="${p >= 0 ? "profit" : "loss"}">${money(p)}</strong>
+      </div>
+
+      <div class="badges">
+        <span class="badge">${escapeHtml(order.category)}</span>
+        <span class="badge">${escapeHtml(order.payment)}</span>
+        <span class="badge">${escapeHtml(order.status)}</span>
+        <span class="badge">${escapeHtml(order.date)}</span>
+      </div>
+
+      <p>
+        <strong>${escapeHtml(order.product)}</strong><br>
+        Qty: ${order.qty} |
+        Sell: ${money(order.selling)} |
+        Cost: ${money(order.cost)} |
+        Shipping: ${money(order.shipping)}
+      </p>
+
+      <p class="muted">${escapeHtml(order.address || "")}</p>
+
+      ${order.tracking ? `<p class="muted">Tracking: ${escapeHtml(order.tracking)}</p>` : ""}
+      ${order.notes ? `<p class="muted">Notes: ${escapeHtml(order.notes)}</p>` : ""}
+
+      <div class="actions">
+        <button class="btn-blue" onclick="editOrder('${order.id}')">Edit</button>
+        <button class="btn-green" onclick="markShipped('${order.id}')">✓ Shipped</button>
+        <button class="btn-red" onclick="deleteOrder('${order.id}')">Delete</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderExpenses() {
+  document.getElementById("expensesList").innerHTML = expenses.length
+    ? expenses.map(expense => `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <h3>${escapeHtml(expense.type)}</h3>
+            <div class="muted">${escapeHtml(expense.category)} • ${escapeHtml(expense.date)}</div>
           </div>
+          <strong class="loss">${money(expense.amount)}</strong>
+        </div>
+        ${expense.notes ? `<p class="muted">${escapeHtml(expense.notes)}</p>` : ""}
+        <div class="actions" style="grid-template-columns:1fr;">
+          <button class="btn-red" onclick="deleteExpense('${expense.id}')">Delete</button>
+        </div>
+      </div>
+    `).join("")
+    : `<div class="card muted">No expenses added.</div>`;
+}
 
-          <div class="items">
-            ${inputs}
-          </div>
-        `;
+function markShipped(orderId) {
+  orders = orders.map(order =>
+    order.id === orderId ? { ...order, status: "Shipped" } : order
+  );
+  saveData();
+  renderAll();
+}
 
-        grid.appendChild(card);
-      });
+function deleteOrder(orderId) {
+  if (!confirm("Delete this order?")) return;
+  orders = orders.filter(order => order.id !== orderId);
+  saveData();
+  renderAll();
+}
 
-      calculateTotals();
+function deleteExpense(expenseId) {
+  if (!confirm("Delete this expense?")) return;
+  expenses = expenses.filter(expense => expense.id !== expenseId);
+  saveData();
+  renderAll();
+}
+
+function exportOrdersCSV() {
+  const rows = [
+    [
+      "Date", "Category", "Name", "Phone", "Address", "Product", "Qty",
+      "Selling", "Cost", "Shipping", "Ads", "Platform", "COD Charge",
+      "Refund", "Payment", "Status", "Tracking", "Profit"
+    ]
+  ];
+
+  orders.forEach(o => {
+    rows.push([
+      o.date, o.category, o.name, o.phone, o.address, o.product, o.qty,
+      o.selling, o.cost, o.shipping, o.ads, o.platform, o.codCharge,
+      o.refund, o.payment, o.status, o.tracking, profit(o)
+    ]);
+  });
+
+  const csv = rows.map(row =>
+    row.map(cell => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")
+  ).join("\n");
+
+  downloadFile(`${currentUser}-sellerdesk-orders.csv`, csv);
+}
+
+function downloadBackup() {
+  downloadFile(
+    `${currentUser}-sellerdesk-backup.json`,
+    JSON.stringify({ user: currentUser, orders, expenses }, null, 2)
+  );
+}
+
+function importBackup() {
+  const file = document.getElementById("backupFile").files[0];
+
+  if (!file) {
+    alert("Choose backup file first.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      orders = Array.isArray(data.orders) ? data.orders : [];
+      expenses = Array.isArray(data.expenses) ? data.expenses : [];
+      saveData();
+      renderAll();
+      alert("Backup imported ✔️");
+    } catch {
+      alert("Invalid backup file.");
     }
+  };
 
-    function updateValue(category, field, value) {
-      data[category][field] = Number(value);
-      calculateTotals();
-    }
+  reader.readAsText(file);
+}
 
-    function calculateTotals() {
-      let totalSales = 0;
-      let totalCost = 0;
-      let totalExpense = 0;
-      let netProfit = 0;
+function clearData() {
+  if (!confirm(`Delete all data for ${currentUser}?`)) return;
+  orders = [];
+  expenses = [];
+  saveData();
+  renderAll();
+}
 
-      categories.forEach((cat, index) => {
-        const sales = Number(data[cat.name]?.["Sales"] || 0);
-        let expenses = 0;
+function downloadFile(filename, content) {
+  const blob = new Blob([content], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
 
-        cat.fields.forEach(field => {
-          if (field !== "Sales") {
-            expenses += Number(data[cat.name]?.[field] || 0);
-          }
-        });
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
-        const profit = sales - expenses;
+function renderAll() {
+  renderHome();
+  renderOrders();
+  renderExpenses();
+}
 
-        totalSales += sales;
-        totalCost += Number(data[cat.name]?.["Product Cost"] || 0);
-        totalExpense += expenses - Number(data[cat.name]?.["Product Cost"] || 0);
-        netProfit += profit;
+renderAll();
+</script>
 
-        const profitBox = document.getElementById("profit-" + index);
-        if (profitBox) {
-          profitBox.textContent = formatMoney(profit);
-          profitBox.className = profit >= 0 ? "profit" : "profit loss";
-        }
-      });
-
-      document.getElementById("totalSales").textContent = formatMoney(totalSales);
-      document.getElementById("totalCost").textContent = formatMoney(totalCost);
-      document.getElementById("totalExpense").textContent = formatMoney(totalExpense);
-      document.getElementById("netProfit").textContent = formatMoney(netProfit);
-      document.getElementById("netProfit").className = netProfit >= 0 ? "" : "loss";
-    }
-
-    function saveData() {
-      localStorage.setItem("sellerdeskData", JSON.stringify(data));
-      alert("Data saved successfully");
-    }
-
-    function resetData() {
-      if (confirm("Are you sure you want to reset all data?")) {
-        localStorage.removeItem("sellerdeskData");
-        data = {};
-        renderCards();
-      }
-    }
-
-    renderCards();
-  </script>
 </body>
 </html>
