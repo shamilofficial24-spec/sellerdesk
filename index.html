@@ -727,8 +727,23 @@ document.getElementById("orderForm").addEventListener("submit", event => {
     );
 
     saveData();
-    alert("Order updated ✔️");
-    cancelEdit(false);
+
+    db.from("orders")
+      .update(orderData)
+      .eq("id", editingOrderId)
+      .then(({ error }) => {
+        if (error) {
+          alert("Cloud update failed: " + error.message);
+          console.log(error);
+          return;
+        }
+
+        alert("Order updated ✔️");
+        cancelEdit(false);
+        renderAll();
+      });
+
+    return;
   } else {
   const newOrder = {
   id: id(),
@@ -963,19 +978,27 @@ function renderExpenses() {
     : `<div class="card muted">No expenses added.</div>`;
 }
 
-function markShipped(orderId) {
+async function markShipped(orderId) {
+  const { error } = await db
+    .from("orders")
+    .update({ status: "Shipped" })
+    .eq("id", orderId);
+
+  if (error) {
+    alert("Cloud update failed: " + error.message);
+    console.log(error);
+    return;
+  }
+
   orders = orders.map(order =>
     order.id === orderId ? { ...order, status: "Shipped" } : order
   );
+
   saveData();
   renderAll();
 }
 async function deleteOrder(orderId) {
   if (!confirm("Delete this order?")) return;
-
-  orders = orders.filter(order => order.id !== orderId);
-  saveData();
-  renderAll();
 
   const { error } = await db
     .from("orders")
@@ -983,12 +1006,16 @@ async function deleteOrder(orderId) {
     .eq("id", orderId);
 
   if (error) {
-    alert("Deleted locally, but Supabase delete failed: " + error.message);
+    alert("Cloud delete failed: " + error.message);
     console.log(error);
     return;
   }
 
-  alert("Order deleted from cloud ✔️");
+  orders = orders.filter(order => order.id !== orderId);
+  saveData();
+  renderAll();
+
+  alert("Order deleted ✔️");
 }
 
 function deleteExpense(expenseId) {
