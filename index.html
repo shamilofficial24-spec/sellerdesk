@@ -1065,6 +1065,27 @@ function renderAll() {
 
 renderAll();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const db = supabase.createClient(
+  "https://rudieejhyofxezgxmyfz.supabase.co",
+  "PASTE_YOUR_PUBLISHABLE_KEY"
+);
+
+async function addOrder(order){
+  const { data, error } = await db
+    .from("orders")
+    .insert([order]);
+
+  if(error){
+    console.log(error);
+    alert(error.message);
+    return;
+  }
+
+  alert("Saved to cloud");
+}
+</script>
 </body>
 </html>
