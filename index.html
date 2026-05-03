@@ -552,13 +552,19 @@ details .advanced {
 <section id="backup" class="page">
   <div class="card">
     <h2>Backup / Export</h2>
-    <div class="form">
-      <button class="btn-blue" onclick="exportOrdersCSV()">Export Orders CSV</button>
-      <button class="btn-blue" onclick="downloadBackup()">Download Backup JSON</button>
-      <input type="file" id="backupFile" accept=".json" />
-      <button class="btn-dark" onclick="importBackup()">Import Backup</button>
-      <button class="btn-red" onclick="clearData()">Delete This User Data</button>
-    </div>
+   <div class="form">
+  <button class="btn-blue" onclick="exportOrdersCSV()">Export Orders CSV</button>
+
+  <button class="btn-blue" onclick="downloadBackup()">Download Backup JSON</button>
+
+  <button class="btn-green" onclick="syncOldOrders()">Sync Old Orders</button>
+
+  <input type="file" id="backupFile" accept=".json" />
+
+  <button class="btn-dark" onclick="importBackup()">Import Backup</button>
+
+  <button class="btn-red" onclick="clearData()">Delete This User Data</button>
+</div>
   </div>
 
   <div class="card">
@@ -1069,6 +1075,24 @@ function renderAll() {
 }
 
 renderAll();
+  async function syncOldOrders() {
+  if (!orders.length) {
+    alert("No old orders found in this browser.");
+    return;
+  }
+
+  const { error } = await db
+    .from("orders")
+    .upsert(orders, { onConflict: "id" });
+
+  if (error) {
+    console.log(error);
+    alert("Sync failed: " + error.message);
+    return;
+  }
+
+  alert("Old browser orders synced to Supabase ✔️");
+}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
