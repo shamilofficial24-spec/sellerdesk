@@ -970,12 +970,25 @@ function markShipped(orderId) {
   saveData();
   renderAll();
 }
-
-function deleteOrder(orderId) {
+async function deleteOrder(orderId) {
   if (!confirm("Delete this order?")) return;
+
   orders = orders.filter(order => order.id !== orderId);
   saveData();
   renderAll();
+
+  const { error } = await db
+    .from("orders")
+    .delete()
+    .eq("id", orderId);
+
+  if (error) {
+    alert("Deleted locally, but Supabase delete failed: " + error.message);
+    console.log(error);
+    return;
+  }
+
+  alert("Order deleted from cloud ✔️");
 }
 
 function deleteExpense(expenseId) {
