@@ -724,14 +724,19 @@ document.getElementById("orderForm").addEventListener("submit", event => {
     alert("Order updated ✔️");
     cancelEdit(false);
   } else {
-    orders.unshift({
-      id: id(),
-      createdAt: new Date().toISOString(),
-      ...orderData
-    });
+  const newOrder = {
+  id: id(),
+  createdAt: new Date().toISOString(),
+  ...orderData
+};
 
-    saveData();
-    alert("Order saved ✔️");
+orders.unshift(newOrder);
+saveData();
+
+addOrder(newOrder);   // send to Supabase
+
+alert("Order saved ✔️");
+resetOrderForm();
     resetOrderForm();
   }
 
@@ -1070,7 +1075,8 @@ renderAll();
 <script>
 const db = supabase.createClient(
   "https://rudieejhyofxezgxmyfz.supabase.co",
-  "PASTE_YOUR_PUBLISHABLE_KEY"
+  "sb_publishable_xxxxxxxxxxxxx"
+
 );
 
 async function addOrder(order){
