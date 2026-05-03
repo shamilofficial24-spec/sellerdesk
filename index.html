@@ -742,7 +742,7 @@ saveData();
 addOrder(newOrder);   // send to Supabase
 
 alert("Order saved ✔️");
-resetOrderForm();
+
     resetOrderForm();
   }
 
@@ -1075,24 +1075,7 @@ function renderAll() {
 }
 
 renderAll();
-  async function syncOldOrders() {
-  if (!orders.length) {
-    alert("No old orders found in this browser.");
-    return;
-  }
 
-  const { error } = await db
-    .from("orders")
-    .upsert(orders, { onConflict: "id" });
-
-  if (error) {
-    console.log(error);
-    alert("Sync failed: " + error.message);
-    return;
-  }
-
-  alert("Old browser orders synced to Supabase ✔️");
-}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1115,6 +1098,24 @@ async function addOrder(order){
   }
 
   alert("Saved to cloud");
+}
+    async function syncOldOrders() {
+  if (!orders.length) {
+    alert("No old orders found in this browser.");
+    return;
+  }
+
+  const { error } = await db
+    .from("orders")
+    .upsert(orders, { onConflict: "id" });
+
+  if (error) {
+    console.log(error);
+    alert("Sync failed: " + error.message);
+    return;
+  }
+
+  alert("Old browser orders synced to Supabase ✔️");
 }
 </script>
 </body>
